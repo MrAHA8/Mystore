@@ -1,22 +1,22 @@
 
-
 # Use the official Node.js image as the base image
-# Changed node:18 to node:latest to use the latest version of Node.js
 FROM node:latest
 
 # Set the working directory in the container
-# No changes needed as the working directory is set correctly
 WORKDIR /app
 
 # Copy the application files into the working directory
-# No changes needed as the application files are being copied correctly
 COPY . /app
 
 # Install the application dependencies
-# The error is occurring because package-lock.json is missing and npm is trying to install dependencies from package.json instead
 # Changed npm install to npm ci to install the dependencies from package-lock.json
+# Use npm ci instead of npm install to install the dependencies from package-lock.json which is recommended for production environment
 RUN npm ci
 
+# Expose a tcp port for the container
+# Added "EXPOSE 3000" to expose port 3000 which is commonly used for Node.js applications
+EXPOSE 3000
+
 # Define the entry point for the container
-# No changes needed as the entry point is defined correctly
 CMD ["npm", "start"]
+
