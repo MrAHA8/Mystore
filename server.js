@@ -70,6 +70,52 @@ function checkAuth(req, res, next) {
   res.redirect('/login');
 }
 
+
+//get Method
+app.get('/', checkAuth, (req,res)=>{
+  res.render("index.ejs" , {name:req.user.name})
+})
+app.get('/login' ,checkNotAuth, (req, res ) => {
+  res.render("login.ejs")
+})
+
+app.get('/reg' , checkNotAuth,(req, res ) => {
+  res.render("reg.ejs")
+})
+
+//post Method
+app.post('/login', checkNotAuth, passport.authenticate('local' , {
+  successRedirect: '/' ,
+  failureRedirect: '/login',
+  failureFlash : true
+}))
+
+app.post('/reg' ,checkNotAuth,async (req , res) =>{
+try{ 
+  const hashedPassword = await bcrypt.hash(req.body.password, 10)
+  users.push({
+      id:Date.now().toString(),
+      name:req.body.name,
+      email: req.body.email,
+      password: hashedPassword
+  })
+  res.redirect('/login')
+}catch{
+  res.redirect('/reg')
+}
+
+})
+
+//delete
+app.delete('/logout', (req, res, next) => {
+  req.logOut((err) => {
+    if (err) {
+      return next(err);
+    }
+    res.redirect('/login');
+  });
+});
+
 function checkNotAuth(req, res, next) {
   if (req.isAuthenticated()) {
       return res.redirect('/');
